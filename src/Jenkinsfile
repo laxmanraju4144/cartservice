@@ -65,6 +65,7 @@ pipeline {
             }
         }
     }
+
     post {
         always {
             sh "docker rmi ${IMAGE_NAME} || true"
@@ -79,3 +80,5 @@ pipeline {
     }
 }
 
+
+//Chnages
