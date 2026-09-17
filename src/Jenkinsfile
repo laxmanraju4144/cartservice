@@ -1,4 +1,4 @@
-pipeline {
+ pipeline {
     agent any
 
     environment {
@@ -15,11 +15,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh '''
-                    printenv
-                    cd src/
-                    docker build -t ${IMAGE_NAME} .
-                '''
+                sh "cd src && docker build -t ${IMAGE_NAME} ."
             }
         }
 
@@ -50,7 +46,6 @@ pipeline {
                 )]) {
                     sh '''
                         if [ -d "gitops" ]; then
-                            echo "gitops directory exists. Removing it..."
                             rm -rf gitops
                         fi
                         git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/laxmanraju4144/GitOps.git gitops
@@ -59,11 +54,11 @@ pipeline {
                         git config user.email "jenkins@ci.com"
                         git config user.name "jenkins"
 
-                        # Update image tag
+                        git pull origin main
                         sed -i "s|image: .*cartservice.*|image: ${IMAGE_NAME}|g" deployment.yaml
 
                         git add .
-                        git commit -m "Update cartservice image to ${IMAGE_NAME}"
+                        git commit -m "Update cartservice image to ${IMAGE_NAME}" || echo "No changes to commit"
                         git push origin main
                     '''
                 }
@@ -85,5 +80,3 @@ pipeline {
     }
 }
 
-
-//Chnages
